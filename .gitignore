@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# 가상환경
+venv/
+
+# IDE 설정
+.vscode/
+
+# 모델 파일
+*.pt
+
+# 외부 라이브러리 (clone 했다면)
+yolov5/
+
+# 로그 파일 등
+*.log
