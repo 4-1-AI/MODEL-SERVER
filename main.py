@@ -1,7 +1,18 @@
+#main.py
+
 from fastapi import FastAPI
-from routers import predict, webrtc
+from fastapi.middleware.cors import CORSMiddleware 
+from routers import step_router, websocket_router
 
 app = FastAPI()
 
-app.include_router(predict.router, prefix="/predict")
-app.include_router(webrtc.router, prefix="/ws")
+# CORS 설정 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(websocket_router.router, prefix="/ws")

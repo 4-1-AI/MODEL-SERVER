@@ -2,10 +2,10 @@ from ultralytics import YOLO
 import os
 
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "find_cause.pt"))
-yolo_model = YOLO(model_path)
+yolov8_model = YOLO(model_path)
 
 def detect_objects_v8(image):
-    results = yolo_model(image)[0]
+    results = yolov8_model(image)[0]
     obj_preds = []
     for box in results.boxes:
         cls_id = int(box.cls[0])
@@ -18,7 +18,7 @@ def find_closest_object(fire_center, object_preds):
     fx, fy = fire_center
     min_dist = float('inf')
     cause_label = None
-    names = yolo_model.names
+    names = yolov8_model.names
     for x1, y1, x2, y2, conf, cls_id in object_preds:
         label = names.get(cls_id, None)
         if label is None:
@@ -31,5 +31,5 @@ def find_closest_object(fire_center, object_preds):
     return cause_label, min_dist
 
 def yolo_infer_and_draw(image):
-    results = yolo_model(image)
+    results = yolov8_model(image)
     return results[0].plot()
