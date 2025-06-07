@@ -44,7 +44,8 @@ class FireLevelDeepCNN(nn.Module):
         return self.fc(x)
 
 # 모델 로딩
-model_path = "C:/Users/minju.MINJU-COM-1.000/Desktop/4-1/인공지능/플젝/aimodel/fire_step.pt"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(BASE_DIR, "..", "fire_step.pt")  
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 fire_step_model = FireLevelDeepCNN().to(device)
