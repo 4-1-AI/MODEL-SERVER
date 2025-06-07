@@ -14,6 +14,10 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
+# YOLOv5 설치 (GitHub에서 clone → 내부 코드 수정 안 했으므로 그대로 사용 가능)
+RUN git clone https://github.com/ultralytics/yolov5.git && \
+    pip install --no-cache-dir -r yolov5/requirements.txt
+
 # 4. 필수 파일 복사
 COPY requirements.txt .
 
@@ -23,5 +27,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 6. 전체 프로젝트 복사
 COPY . .
 
-# 7. FastAPI 앱 실행 (필요 시 main 모듈명 조정)
+# 7. FastAPI 앱 실행 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
