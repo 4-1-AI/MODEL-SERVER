@@ -9,14 +9,14 @@ import numpy as np
 YOLOV5_PATH = os.path.join(os.path.dirname(__file__), "..", "yolov5")
 sys.path.append(YOLOV5_PATH)
 
-from models.experimental import attempt_load
+from ultralytics import YOLO
 
 import torch
 from torchvision import transforms
 from utils.general import non_max_suppression
 
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fire_smoke.pt"))
-model = attempt_load(model_path, device="cpu")
+model = YOLO(model_path, device="cpu")
 
 transform = transforms.Compose([
     transforms.Resize((640, 640)),
