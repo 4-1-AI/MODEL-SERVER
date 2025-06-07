@@ -16,7 +16,7 @@ from torchvision import transforms
 from utils.general import non_max_suppression
 
 model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fire_smoke.pt"))
-model = YOLO(model_path, device="cpu")
+model = YOLO(model_path)
 
 transform = transforms.Compose([
     transforms.Resize((640, 640)),
