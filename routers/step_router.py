@@ -6,11 +6,15 @@ from my_models.time_series_model import generate_feature, fire_step_model, devic
 router = APIRouter()
 
 async def process_fire_status(boxes, buffer: deque, websocket: WebSocket):
-    # 1. 감지된 bbox가 없으면 연속성 끊긴 것으로 간주 → 초기화
-    print("bbox 탐지용;")
     if not boxes:
+        await websocket.send_json({
+            "type": "status",
+            "boxes": [],
+            "status": -1,
+            "statusLabel": "safe"
+        })
         buffer.clear()
-        return  # 감지 안 됐으면 아예 아무것도 안 보냄
+        return 
 
     # 2. 감지된 프레임일 때만 feature 생성 및 buffer 저장
     feature = generate_feature(boxes, buffer)

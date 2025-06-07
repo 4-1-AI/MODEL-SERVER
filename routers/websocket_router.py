@@ -36,18 +36,23 @@ async def websocket_endpoint(websocket: WebSocket):
             for box in boxes:
                 print(f" → label: {box['label']}, conf: {box['confidence']:.2f}")
 
-            # 🔁 실시간 상태 전송 (이미지 없음)
-            await websocket.send_json({
-                "type": "status",
-                "boxes": boxes,
-                "status": -1,  # 기본값 또는 추후 모델로 예측
-                "statusLabel": "safe"  # 추후 감지된 상태 반영 가능
-            })
-
-            # 🔀 추가 로직 (비동기 실행)
             if boxes:
-                asyncio.create_task(process_fire_status(boxes, buffer, websocket))
-                asyncio.create_task(post_fire_cause(fire_center, None))
+                await process_fire_status(boxes, buffer, websocket)
+                # 🔄 2. 이미지 → base64 인코딩
+                
+                try:
+                    _, jpeg = cv2.imencode('.jpg', drawn_frame)
+                    img_base64 = base64.b64encode(jpeg).decode("utf-8")
+                    img_base64_str = f"data:image/jpeg;base64,{img_base64}"
 
+                    # 🔄 3. 원인 분석은 비동기 태스크로 수행
+                    asyncio.create_task(post_fire_cause(fire_center, img_base64_str))
+
+                except Exception as e:
+                    print("❌ drawn_frame 인코딩 실패:", e)
+            else:
+                # box 없을 때도 상태 처리
+                await process_fire_status([], buffer, websocket)
+    
     except WebSocketDisconnect:
         print("🔌 WebSocket 연결 종료")
