@@ -1,9 +1,8 @@
 from fastapi import APIRouter, WebSocket
 from starlette.websockets import WebSocketDisconnect
-import cv2, base64, numpy as np
+import cv2, numpy as np
 from collections import deque
 import asyncio
-from PIL import Image 
 
 from my_models.yolov5_model import detect_fire_v5
 from routers.step_router import process_fire_status
@@ -21,49 +20,34 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_bytes()
             frame = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
 
-            # 1. YOLO 감지
-            fire_center, pred, label = detect_fire_v5(frame)
-            boxes = []
+            if frame is None:
+                print("⚠️ 잘못된 프레임 수신 - 건너뜀")
+                continue
+            print(f"[RECV] 프레임 수신: {frame.shape}")
 
-            # bbox 시각화화
-            if pred is not None:
-                for *xyxy, conf, cls in pred:
-                    label_str = str(int(cls))
-                    if label_str not in ['1', '2']:
-                        continue
+            # 🔄 YOLO 감지만 수행
+            try:
+                fire_center, boxes, drawn_frame = detect_fire_v5(frame)
+                print(f"[YOLO] 예측 결과: {len(boxes)}개")
+            except Exception as e:
+                print("🔥 detect_fire_v5 예외:", e)
+                continue
 
-                    x1, y1, x2, y2 = map(int, xyxy)
-                    confidence = float(conf)
+            for box in boxes:
+                print(f" → label: {box['label']}, conf: {box['confidence']:.2f}")
 
-                    boxes.append({
-                        "label": label_str,
-                        "x": x1,
-                        "y": y1,
-                        "w": x2 - x1,
-                        "h": y2 - y1,
-                        "confidence": confidence
-                    })
-
-                    color = (0, 0, 255) if label_str == '1' else (255, 0, 0)
-                    cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-
-            # 2. 시각화 프레임 전송
-            _, encoded = cv2.imencode(".jpg", frame)
-            img_base64 = base64.b64encode(encoded).decode("utf-8")
-
+            # 🔁 실시간 상태 전송 (이미지 없음)
             await websocket.send_json({
-                "image": img_base64,
+                "type": "status",
                 "boxes": boxes,
-                "status": -1,
-                "statusLabel": "safe"
+                "status": -1,  # 기본값 또는 추후 모델로 예측
+                "statusLabel": "safe"  # 추후 감지된 상태 반영 가능
             })
 
-            # 3. bbox가 감지되었을 때 1-1, 1-2 병렬 처리
+            # 🔀 추가 로직 (비동기 실행)
             if boxes:
-                await asyncio.gather(
-                    process_fire_status(boxes, buffer, websocket),
-                    post_fire_cause(fire_center, img_base64)
-                )
+                asyncio.create_task(process_fire_status(boxes, buffer, websocket))
+                asyncio.create_task(post_fire_cause(fire_center, None))
 
     except WebSocketDisconnect:
         print("🔌 WebSocket 연결 종료")

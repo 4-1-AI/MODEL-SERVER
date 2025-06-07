@@ -7,6 +7,7 @@ router = APIRouter()
 
 async def process_fire_status(boxes, buffer: deque, websocket: WebSocket):
     # 1. 감지된 bbox가 없으면 연속성 끊긴 것으로 간주 → 초기화
+    print("bbox 탐지용;")
     if not boxes:
         buffer.clear()
         return  # 감지 안 됐으면 아예 아무것도 안 보냄
