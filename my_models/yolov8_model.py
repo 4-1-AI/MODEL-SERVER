@@ -28,6 +28,8 @@ def find_closest_object(fire_center, object_preds):
         if dist < min_dist:
             min_dist = dist
             cause_label = label
+            
+    print(f"Closest Object: {cause_label} with distance: {min_dist}")
     return cause_label, min_dist
 
 def yolo_infer_and_draw(image):
