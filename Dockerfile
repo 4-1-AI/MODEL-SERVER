@@ -22,7 +22,7 @@ RUN git clone https://github.com/ultralytics/yolov5.git /app/yolov5
 ENV PYTHONPATH="/app/yolov5"
 
 # 5. 라이브러리 설치
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
 
 # 6. 전체 프로젝트 복사
 COPY . .
