@@ -17,6 +17,9 @@ RUN apt-get update && apt-get install -y \
 # 4. 필수 파일 복사
 COPY requirements.txt .
 
+RUN git clone https://github.com/ultralytics/yolov5.git /app/yolov5
+ENV PYTHONPATH="${PYTHONPATH}:/app/yolov5"
+
 # 5. 라이브러리 설치
 RUN pip install --no-cache-dir -r requirements.txt
 

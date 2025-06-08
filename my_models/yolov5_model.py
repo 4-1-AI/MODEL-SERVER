@@ -10,9 +10,9 @@ YOLOV5_PATH = os.path.join(os.path.dirname(__file__), "..", "yolov5")
 sys.path.append(YOLOV5_PATH)
 
 # 2. yolov5 내부 모듈 import
-from models.experimental import attempt_load
-from utils.general import non_max_suppression
-from utils.torch_utils import select_device
+from yolov5.models.experimental import attempt_load
+from yolov5.utils.general import non_max_suppression
+from yolov5.utils.torch_utils import select_device
 
 from torchvision import transforms
 
