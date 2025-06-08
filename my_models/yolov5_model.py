@@ -1,26 +1,31 @@
-# yolov5_model.py
-import sys
-import os
-from PIL import Image 
+import sys, os
+import torch
+from PIL import Image
 import cv2
 import numpy as np
+from torchvision import transforms
 
-# 현재 파일 기준으로 yolov5 디렉토리 경로 설정
+# 1. yolov5 경로 연결
 YOLOV5_PATH = os.path.join(os.path.dirname(__file__), "..", "yolov5")
 sys.path.append(YOLOV5_PATH)
 
-from ultralytics import YOLO
+# 2. yolov5 내부 모듈 import
+from models.experimental import attempt_load
+from utils.general import non_max_suppression
+from utils.torch_utils import select_device
 
-import torch
 from torchvision import transforms
-
-model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fire_smoke.pt"))
-model = YOLO(model_path)
 
 transform = transforms.Compose([
     transforms.Resize((640, 640)),
     transforms.ToTensor(),
 ])
+
+# 3. 모델 로딩
+device = select_device('')
+model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fire_smoke.pt"))
+model = attempt_load(model_path,  device=device)
+model.eval()
 
 def enhance_fire_smoke_image(image):
     """

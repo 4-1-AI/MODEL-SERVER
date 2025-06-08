@@ -15,9 +15,14 @@ torchvision==0.21.0
 
 # YOLOv5, YOLOv8
 ultralytics==8.3.148
+uvicorn[standard]==0.34.3
+
+# 기타 유틸 (YOLOv5 필수)
+tqdm==4.67.1
+matplotlib==3.10.3
+PyYAML==6.0.2
+scipy==1.15.3
+requests==2.32.3
 
 # 벡터/배열 처리
 numpy==1.26.4
-
-# 기타
-uvicorn==0.34.3

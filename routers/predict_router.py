@@ -4,7 +4,7 @@ import io, base64
 from my_models.yolov8_model import detect_objects_v8, find_closest_object
 import traceback    
 
-BACKEND_API_URL = "http://localhost:8080/alert/fire-cause/sms" 
+BACKEND_API_URL = "http://3.35.212.49:8080/alert/fire-cause/sms" 
 
 
 async def post_fire_cause(fire_center, img_base64: str,  user_id: int):
