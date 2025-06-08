@@ -6,6 +6,7 @@ WORKDIR /app
 
 # 3. 시스템 패키지 설치 (OpenCV 등 빌드에 필요)
 RUN apt-get update && apt-get install -y \
+    git \
     gcc \
     libglib2.0-0 \
     libsm6 \
@@ -18,7 +19,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 RUN git clone https://github.com/ultralytics/yolov5.git /app/yolov5
-ENV PYTHONPATH="${PYTHONPATH}:/app/yolov5"
+ENV PYTHONPATH="/app/yolov5"
 
 # 5. 라이브러리 설치
 RUN pip install --no-cache-dir -r requirements.txt
